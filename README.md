@@ -7,7 +7,6 @@ This project implements a text classification system powered by Large Language M
   - gpt-oss:20b
   - llama3.1:8b
 
-
 ## Project Context: **NoNoise LinkedIn** ML Feature
 
 The example usecase of this project will be to enable the Implementation of a new feature in the NoNoise LinkedIn browser extension to remove ads posted by people in our network using Machine Learning.
@@ -23,6 +22,7 @@ The example usecase of this project will be to enable the Implementation of a ne
 - No external API costs or rate limits.
 - **Rapid iteration**: tweak prompts/labels and re-run instantly.
 
+
 ## Prerequisites
 
 - macOS, Linux, or Windows machine with sufficient RAM/VRAM.
@@ -37,6 +37,40 @@ The example usecase of this project will be to enable the Implementation of a ne
   ollama pull llama3.1:8b
   ```
 
+## Repository Structure
+
+```text
+.
+├─ csvFiles/
+│  └─ linkedin_posts.csv
+│  └─ output_data.csv
+├─ dataClassification.py
+├─ LocalLLMtextClassification.py
+├─ promptConstants.py
+│
+├─ README.md
+├─ LICENSE
+└─ .gitignore
+```
+
+- **csvFiles/linkedin_posts.csv**
+  - Source dataset of raw LinkedIn post texts (first column is treated as the post body). 
+  - Replace/extend this file with your own data/use-case to re-run classification.
+- **csvFiles/output_data.csv**
+  - Generated output written by `dataClassification.py`.
+- **dataClassification.py**
+  - Batch pipeline entrypoint. 
+  - Loads `csvFiles/linkedin_posts.csv`, calls `classify_advertisement()` for each row using a locally running LLM.
+  - logs [**AD**]/[**NOT_AD**] (Binary Classification), and writes `csvFiles/output_data.csv` with a new `processed_output` column.
+- **LocalLLMtextClassification.py**
+  - Thin client for the local Ollama server. 
+  - Sends the prompt, using `fewShotPrompt(text)` to the selected model (gpt-oss:20b or llama3.1:8b).
+  - Returns the classification label string.
+- **promptConstants.py**
+  - Central place for the **prompt**, labels, and few-shot examples used by the classifier. 
+  - Tweak this to adjust behavior, labels, or instructions.
+
+
 ## Model Selection
 
 - **gpt-oss:20b**
@@ -48,6 +82,15 @@ The example usecase of this project will be to enable the Implementation of a ne
   - Pros: Fast, lightweight, good baseline quality, great for batch throughput.
   - Cons: Can occasionally deviate from strict formatting.
   - Use when: you need speed or are running on limited hardware.
+
+
+## Acknowledgment
+
+- Dataset: [1600 Posts on LinkedIn (Kaggle)](https://www.kaggle.com/datasets/moeinaminifard/1600-posts-on-linkedin)
+- [Ollama](https://ollama.com/) for enabling local inference
+- Llama (Meta AI), for llama3.1:8b
+- OpenAI for gpt-oss:20b model
+
 
 ## License
 
